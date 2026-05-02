@@ -1,0 +1,15 @@
+# Python
+.myvenv/
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+
+# Data & Models
+data/
+models/
+logs/
