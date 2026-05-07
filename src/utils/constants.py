@@ -13,3 +13,5 @@ DEFAULT_CHANNEL_RENAMING = {
     'EEG-12':'P5', 'EEG-13':'P1', 'EEG-14':'P2', 'EEG-15':'P6',
     'EEG-16':'POz',
 }
+
+DEFAULT_MONTAGE = 'standard_1020'

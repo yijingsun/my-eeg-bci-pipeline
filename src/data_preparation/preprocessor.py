@@ -1,55 +1,48 @@
-"""
-基础预处理器
-降采样 → 坏通道修复 → 滤波 → 重参考
-"""
 import mne
-from typing import Optional, List, Tuple
-from src.utils.session_config import SessionConfig
 
 
 class EEGPreprocessor:
-    """EEG 信号预处理器"""
 
-    def __init__(self, config: SessionConfig):
-        self.config = config
-        self.bad_channels_manual = config.bad_channels_manual or []
+    def __init__(self, resample_freq=None, filter_ica=(0.5, 50), filter_mi=(8, 30), ref_type='average', bad_channels_manual=None):
+        self.resample_freq = resample_freq
+        self.filter_ica = filter_ica
+        self.filter_mi = filter_mi
+        self.ref_type = ref_type
+        self.bad_channels_manual = bad_channels_manual if bad_channels_manual is not None else []
+
 
     def resample(self, raw: mne.io.Raw) -> mne.io.Raw:
         """降采样"""
-        if self.config.resample_freq is None:
-            return raw
         raw = raw.copy()
-        raw.resample(self.config.resample_freq, npad='auto')
+        if self.resample_freq is not None:
+            raw.resample(self.resample_freq, npad='auto')
         return raw
 
     def fix_bad_channels(self, raw: mne.io.Raw) -> mne.io.Raw:
-        """标记坏通道并插值修复"""
         raw = raw.copy()
-        bads = list(set(raw.info['bads'] + self.config.bad_channels_manual))
-        raw.info['bads'] = bads
-        if bads:
+        auto_bads = raw.info['bads']
+        all_bads = list(set(auto_bads + self.bad_channels_manual))
+        raw.info['bads'] = all_bads
+        if all_bads:
             raw.interpolate_bads(reset_bads=True)
         return raw
 
     def apply_ica_filter_and_ref(self, raw: mne.io.Raw) -> mne.io.Raw:
-        """粗滤波 + 重参考（为 ICA 做准备）"""
         raw = raw.copy()
-        raw.filter(
-            l_freq=self.config.filter_ica[0],
-            h_freq=self.config.filter_ica[1],
-            fir_design=self.config.filter_design_ica,
-            verbose=False
-        )
-        mne.set_eeg_reference(raw, self.config.ref_type)
+        raw.filter(l_freq=self.filter_ica[0], h_freq=self.filter_ica[1], fir_design='firwin', verbose=False)
+        mne.set_eeg_reference(raw, self.ref_type) # re-reference
         return raw
 
     def apply_mi_filter(self, raw: mne.io.Raw) -> mne.io.Raw:
-        """精滤波（保留运动想象相关频段）"""
         raw = raw.copy()
-        raw.filter(
-            l_freq=self.config.filter_mi[0],
-            h_freq=self.config.filter_mi[1],
-            fir_design=self.config.filter_design_mi,
-            verbose=False
-        )
+        raw.filter(l_freq=self.filter_mi[0], h_freq=self.filter_mi[1], fir_design='firwin', verbose=False)
         return raw
+
+    def get_params(self) -> dict:
+        return {
+            'resample_freq': self.resample_freq,
+            'filter_ica': self.filter_ica,
+            'filter_mi': self.filter_mi,
+            'ref_type': self.ref_type,
+            'bad_channels_manual': self.bad_channels_manual,
+        }

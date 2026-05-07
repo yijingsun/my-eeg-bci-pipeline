@@ -4,15 +4,17 @@ Epoch 处理器
 """
 import mne
 import numpy as np
-from src.utils.session_config import SessionConfig
 
 
 class EpochProcessor:
     """事件提取与分段处理器"""
 
-    def __init__(self, config: SessionConfig):
-        self.config = config
-        self.bad_trials_manual = config.bad_trials_manual
+    def __init__(self, tmin=1.0, tmax=4.0, events_mapping=None, expected_trials=288, bad_trials_manual=None):
+        self.tmin = tmin
+        self.tmax = tmax
+        self.events_mapping = events_mapping if events_mapping is not None else {'769': 7, '770': 8, '771': 9, '772': 10}
+        self.bad_trials_manual = bad_trials_manual if bad_trials_manual is not None else []
+        self.expected_trials = expected_trials
 
     def extract_events(self, raw: mne.io.Raw) -> np.ndarray:
         """从 raw 中提取事件并去重"""
@@ -20,7 +22,7 @@ class EpochProcessor:
         events = np.unique(events, axis=0)
         return events
 
-    def filter_mi_events(self, events: np.ndarray) -> np.ndarray:
+    def pick_events(self, events: np.ndarray) -> np.ndarray:
         """
         筛选 MI 事件并重编号为 1-4
 
@@ -28,7 +30,7 @@ class EpochProcessor:
         重映射后: 1(左手) 2(右手) 3(双脚) 4(舌头)
         """
         # 筛选
-        event_ids = list(self.config.mi_event_mapping.values())
+        event_ids = list(self.events_mapping.values())
         events_mi = events[np.isin(events[:, 2], event_ids)]
 
         # 重映射到连续 ID
@@ -36,8 +38,8 @@ class EpochProcessor:
         events_mi[:, 2] = np.array([mapping_dict[e] for e in events_mi[:, 2]])
 
         # 校验
-        assert len(events_mi) == self.config.expected_trials, (
-            f"MI 试次数异常: 期望 {self.config.expected_trials}，实际 {len(events_mi)}"
+        assert len(events_mi) == self.expected_trials, (
+            f"MI 试次数异常: 期望 {self.expected_trials}，实际 {len(events_mi)}"
         )
         return events_mi
 
@@ -51,8 +53,8 @@ class EpochProcessor:
         epochs = mne.Epochs(
             raw,
             events,
-            tmin=self.config.tmin,
-            tmax=self.config.tmax,
+            tmin=self.tmin,
+            tmax=self.tmax,
             baseline=None,
             preload=True,
             verbose=False
@@ -70,13 +72,22 @@ class EpochProcessor:
     ) -> mne.Epochs:
         """一站式：事件提取 → 筛选 → 分段"""
         events = self.extract_events(raw)
-        events_mi = self.filter_mi_events(events)
+        events_mi = self.pick_events(events)
         epochs = self.create_epochs(raw, events_mi, drop_channels)
         return epochs
     
     def drop_bad_trials(self, epochs: mne.Epochs) -> mne.Epochs:
         """丢弃手工标记的坏试次"""
         epochs_clean = epochs.copy()
-        if self.config.bad_trials_manual:
-            epochs_clean.drop(self.config.bad_trials_manual, reason='manual')
+        if self.bad_trials_manual:
+            epochs_clean.drop(self.bad_trials_manual, reason='manual')
         return epochs_clean
+    
+    def get_params(self) -> dict:
+        return {
+            'tmin': self.tmin,
+            'tmax': self.tmax,
+            'events_mapping': self.events_mapping,
+            'expected_trials': self.expected_trials,
+            'bad_trials_manual': self.bad_trials_manual
+        }
