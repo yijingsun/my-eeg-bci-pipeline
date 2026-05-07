@@ -10,7 +10,7 @@
 1. Motor Imagery (MI, 运动想象)
     - BCI Competition IV Dataset IIa (BCICIV_2a_gdf)
         - Description: Imagination of movement (4-class), 1-left hand, 2-right hand, 3-both feet, 4-tongue
-        - Data Type:  EEG (Electroencephalogram, 脑电图)
+        - Data Type: EEG (Electroencephalogram, 头皮脑电图)
         - EOG Estimate: 1-eyes open, 2-eyes closed, 3-eyes movement (EOG, Electroencephalogram, 眼电图)
             - [Download](https://www.bbci.de/competition/download/competition_iv/BCICIV_2a_gdf.zip) or use `wget`
             - [Description](https://www.bbci.de/competition/iv/desc_2a.pdf)
@@ -45,9 +45,10 @@
         - Method 
             - ICA (Independent Component Analysis) [UCSD Labeling Tutorial](https://labeling.ucsd.edu/tutorial/labels)
 3. Epoching (Segment continuous signals into labeled epochs)
-    - Drop bad/eog/... channels
     - Pick MI event epochs (trials)
         - typical window duration: 1s - 4s after cue on imagery (eg. for dataset bciciv 2a)
+    - Drop bad/eog/... channels
+    - Drop bad trials
     - Save epochs data .fif
 
 ## Training Models

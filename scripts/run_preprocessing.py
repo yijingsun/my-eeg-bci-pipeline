@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+"""
+运行数据预处理管道
+
+用法:
+    cd /path/to/my-eeg-bci-pipeline
+    python scripts/run_preprocessing.py
+"""
+import sys
+import os
+
+# 将项目根目录加入 Python 路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.data_preparation import DataPipeline
+
+
+if __name__ == '__main__':
+
+    # ============================================================
+    # 配置（只需改这两行）
+    # ============================================================
+    DATASET = 'BCICIV_2a'
+
+    # ============================================================
+    # 运行
+    # ============================================================
+    pipeline = DataPipeline(dataset_name=DATASET)
+
+    # 单个被试
+    epochs = pipeline.run(subject_id='A01', session='T')
+
+    # 批量处理
+    # for sid in ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09']:
+    #     pipeline.run(subject_id=sid, session='T')
