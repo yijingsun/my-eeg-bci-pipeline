@@ -1,0 +1,36 @@
+{
+  "default": {
+    "resample_freq": 128,
+    "filter_ica": [0.5, 40],
+    "filter_design_ica": "firwin",
+    "filter_mi": [8, 30],
+    "filter_design_mi": "firwin",
+    "ica_n_components": 20,
+    "ica_random_state": 71,
+    "ica_method": "fastica",
+    "ref_type": "average",
+    "tmin": 1.0,
+    "tmax": 4.0,
+    "expected_trials": 288,
+    "mi_event_mapping": {"769": 7, "770": 8, "771": 9, "772": 10},
+    "eog_channels": ["EOG-left", "EOG-central", "EOG-right"],
+
+    "bad_channels_manual": [],
+    "ica_exclude_manual": [],
+    "bad_trials_manual": []
+  },
+  "A01": {
+    "T": {
+      "ica_exclude_manual": [],
+      "bad_trials_manual": []
+    }
+  },
+  "A04": {
+    "T": {
+      "mi_event_mapping": {"769": 5, "770": 6, "771": 7, "772": 8}
+    },
+    "E": {
+      "mi_event_mapping": {"769": 5, "770": 6, "771": 7, "772": 8}
+    }
+  }
+}

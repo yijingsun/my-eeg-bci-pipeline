@@ -18,7 +18,7 @@ class SessionConfig:
 
     # ---------- 加载 ----------
     def _load(self):
-        path = os.path.join(self._base_dir, 'dataset_config.json')
+        path = os.path.join(self._base_dir, 'config.json')
         if not os.path.exists(path):
             raise FileNotFoundError(f"配置文件不存在: {path}")
         with open(path, 'r') as f:

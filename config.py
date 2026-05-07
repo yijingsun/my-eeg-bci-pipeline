@@ -12,7 +12,7 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # ============================================================
 # 数据根目录
 # ============================================================
-DATA_ROOT = os.path.join(PROJECT_ROOT, 'data', 'external')
+DATA_ROOT = os.path.join(PROJECT_ROOT, 'data')
 
 
 # ============================================================
