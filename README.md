@@ -108,14 +108,14 @@ my-eeg-bci-pipeline/
 
 1. Feature Extraction
     - Spatial Domain
-        - CSP (Common Spatial Pattern)
+        - CSP (Common Spatial Pattern)  -> CSP projectotion matrix: `Wcsp : (n_channels, 2 * csp_n_components)`, eg. (22, 2*4)
     - Time Domain
         - ERP (Event-Related Potential)
     - Frequency Domain
         - PSD (Power Spectral Density)
 
-2. Feature Selection
-    - LDA (Linear Discriminant Analysis)
+2. Dimensionality Reduction
+    - LDA (Linear Discriminant Analysis)  -> LDA projection matrix: `Wlda : (2 * csp_n_components, lda_n_components)`
     - PCA (Principal Component Analysis)
 
 3. Classification Models
