@@ -8,10 +8,13 @@ import numpy as np
 class ArtifactRemover:
     """ICA 眼电伪迹去除"""
 
-    def __init__(self, ica_n_components: int = 20, ica_random_state: int = 71, ica_method: str = 'fastica', ica_exclude_manual=None):
-        self.ica_n_components = ica_n_components
-        self.ica_random_state = ica_random_state
-        self.ica_method = ica_method
+    def __init__(self, ica_n_components: int = None, 
+                 ica_random_state: int = None, 
+                 ica_method: str = None, 
+                 ica_exclude_manual=None):
+        self.ica_n_components = ica_n_components if ica_n_components is not None else 20
+        self.ica_random_state = ica_random_state if ica_random_state is not None else 71
+        self.ica_method = ica_method if ica_method is not None else 'fastica'
         self.ica_exclude_manual = ica_exclude_manual if ica_exclude_manual is not None else []
 
         # after fit ica

@@ -9,12 +9,14 @@ import numpy as np
 class EpochProcessor:
     """事件提取与分段处理器"""
 
-    def __init__(self, tmin=1.0, tmax=4.0, events_mapping=None, expected_trials=288, bad_trials_manual=None):
-        self.tmin = tmin
-        self.tmax = tmax
-        self.events_mapping = events_mapping if events_mapping is not None else {'769': 7, '770': 8, '771': 9, '772': 10}
+    def __init__(self, tmin: float = None, tmax: float = None, 
+                 events_mapping: dict = None, expected_trials: int = None, 
+                 bad_trials_manual: list = None):
+        self.tmin = tmin if tmin is not None else 1.0
+        self.tmax = tmax if tmax is not None else 4.0
+        self.events_mapping = events_mapping if events_mapping is not None else {}
         self.bad_trials_manual = bad_trials_manual if bad_trials_manual is not None else []
-        self.expected_trials = expected_trials
+        self.expected_trials = expected_trials if expected_trials is not None else 288
 
     def extract_events(self, raw: mne.io.Raw) -> np.ndarray:
         """从 raw 中提取事件并去重"""

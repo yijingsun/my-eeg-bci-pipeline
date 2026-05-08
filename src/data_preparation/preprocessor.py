@@ -3,11 +3,15 @@ import mne
 
 class EEGPreprocessor:
 
-    def __init__(self, resample_freq=None, filter_ica=(0.5, 50), filter_mi=(8, 30), ref_type='average', bad_channels_manual=None):
-        self.resample_freq = resample_freq
-        self.filter_ica = filter_ica
-        self.filter_mi = filter_mi
-        self.ref_type = ref_type
+    def __init__(self, resample_freq: int = None, 
+                 filter_ica: list = None, 
+                 filter_mi: list = None, 
+                 ref_type: str = None, 
+                 bad_channels_manual: list = None):
+        self.resample_freq = resample_freq if resample_freq is not None else 250
+        self.filter_ica = filter_ica if filter_ica is not None else [0.5, 50]
+        self.filter_mi = filter_mi if filter_mi is not None else [8, 30]
+        self.ref_type = ref_type if ref_type is not None else 'average'
         self.bad_channels_manual = bad_channels_manual if bad_channels_manual is not None else []
 
 

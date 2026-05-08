@@ -3,7 +3,6 @@ import mne
 import joblib
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 import warnings
 
@@ -26,15 +25,21 @@ class OVOCspFeatureExtractor:
     # ==================================================================
     
     def __init__(self, 
-                 csp_n_components=4,                                      # 每个类别对的CSP成分数
-                 csp_reg='ledoit_wolf',                                         # CSP正则化方法
-                 log_transform=True,                                            # 是否对CSP特征取log
-                 normalize_features=True,                                       # 是否对CSP特征进行标准化
-                 lda_n_components=None,                                         # LDA降维目标维度(None则跳过LDA)
-                 random_state=37                                                # 随机种子
+                 csp_n_components: int = None,                                      # 每个类别对的CSP成分数
+                 csp_reg: str = None,                                               # CSP正则化方法
+                 log_transform=True,                                                # 是否对CSP特征取log
+                 normalize_features=True,                                           # 是否对CSP特征进行标准化
+                 lda_n_components=None,                                             # LDA降维目标维度(None则跳过LDA)
+                 random_state: int = None                                           # 随机种子
                  ):                                                   
-        self.csp_n_components = csp_n_components
-        self.csp_reg = csp_reg
+        self.csp_n_components = csp_n_components if csp_n_components is not None and csp_n_components > 0 else 4
+        self.csp_reg = csp_reg if csp_reg is not None else 'ledoit_wolf'
+        self.log_transform = log_transform
+        self.normalize_features = normalize_features
+        self.lda_n_components = lda_n_components
+        self.random_state = random_state if random_state is not None else 37
+        
+        # 训练后会填充的对象
         self.log_transform = log_transform
         self.normalize_features = normalize_features
         self.lda_n_components = lda_n_components
@@ -173,7 +178,7 @@ class OVOCspFeatureExtractor:
                     reg=self.csp_reg,
                     log=self.log_transform,
                     norm_trace=False,
-                    transform_into='average_power'  # 输出平均功率
+                    transform_into='average_power'  # 默认输出平均功率 可选: 'csp_space'
                 )
                 
                 try:
@@ -216,10 +221,10 @@ class OVOCspFeatureExtractor:
             
             # 方差特征
             if csp_output.ndim == 3:
-                # 备选路径: 如果输出是 (n_trials, n_filters, n_times)
+                # if transform_into = 'csp_space' → output shape: (n_trials, n_filters, n_times)
                 variance = np.var(csp_output, axis=-1)
             else:
-                # 主路径: (n_trials, n_filters)
+                # if transform_into = 'average_power' → output shape: (n_trials, n_filters)
                 variance = csp_output
             
             # log变换
@@ -317,28 +322,6 @@ class OVOCspFeatureExtractor:
         importances = np.abs(self.lda_projection.coef_).mean(axis=0)
         return importances / importances.sum()
     
-    def evaluate(self, eeg_epochs_array, event_labels, cv_folds=5):
-        """
-        交叉验证评估特征质量
-        
-        使用SVM作为分类器，评估提取特征的分类性能
-        """
-        from sklearn.svm import SVC
-        
-        features = self.transform(eeg_epochs_array)
-        clf = SVC(kernel='rbf', random_state=self.random_state)
-        cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, 
-                            random_state=self.random_state)
-        scores = cross_val_score(clf, features, event_labels, cv=cv, n_jobs=-1)
-        
-        return {
-            'scores': scores,
-            'mean': np.mean(scores),
-            'std': np.std(scores),
-            'feature_dim': features.shape[1]
-        }
-    
-    
     # ==================================================================
     # 5. 模型持久化
     # ==================================================================
@@ -394,29 +377,5 @@ class OVOCspFeatureExtractor:
                 f"正则化={self.csp_reg})")
 
 
-# ============================================================
-# 使用示例
-# ============================================================
 if __name__ == '__main__':
-    
-    # 创建特征提取器
-    extractor = OVOCspFeatureExtractor(
-        csp_n_components=4,
-        csp_reg='ledoit_wolf'
-    )
-    
-    print("\n使用方法:")
-    print("  # 1. 从epochs提取数据")
-    print("  X = epochs.get_data()")
-    print("  y = epochs.events[:, -1]")
-    print()
-    print("  # 2. 训练并提取特征")
-    print("  features = extractor.fit_transform(X, y)")
-    print()
-    print("  # 3. 用新数据提取特征")
-    print("  X_test = test_epochs.get_data()")
-    print("  test_features = extractor.transform(X_test)")
-    print()
-    print("  # 4. 保存/加载模型")
-    print("  extractor.save('csp_model.joblib')")
-    print("  extractor = OVOCspFeatureExtractor.load('csp_model.joblib')")
+    pass

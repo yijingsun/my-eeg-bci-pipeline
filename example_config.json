@@ -13,11 +13,15 @@
     "eog_channels": ["EOG-left", "EOG-central", "EOG-right"],
 
     "csp_n_components": 4,
-    "lda_n_components": 3
+    "lda_n_components": 3,
+
+    "classify_do_cv": true,
+    "classify_cv_folds": 4,
+    "classify_random_state": 17
   },
   "A01": {
     "T": {
-      "filter_ica": [0.5, 50],
+      "filter_ica": [0.5, 40],
       "ica_exclude_manual": [],
       "bad_trials_manual": []
     }

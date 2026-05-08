@@ -23,7 +23,7 @@ class DataPipeline:
     """
 
     def __init__(self, dataset_name: str = 'BCICIV_2a'):
-        self.dataset_name = dataset_name
+        self.dataset_name = dataset_name   
 
     def run(
         self,
@@ -37,7 +37,7 @@ class DataPipeline:
         执行完整预处理管道
         """
         
-        # ---从json读配置 ---
+        # --- 读json配置 ---
         cfg = load_session_config(self.dataset_name, subject_id, session)
 
         # --- 初始化处理器 ---
@@ -60,7 +60,7 @@ class DataPipeline:
         self.epoch_processor = EpochProcessor(
             tmin=cfg.get('tmin'),
             tmax=cfg.get('tmax'),
-            events_mapping=cfg.get('events_mapping'),
+            events_mapping=cfg.get('mi_event_mapping'),
             expected_trials=cfg.get('expected_trials'),
             bad_trials_manual=cfg.get('bad_trials_manual')
         )
