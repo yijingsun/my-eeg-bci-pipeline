@@ -25,12 +25,11 @@ pip install -r requirements.txt
 
 ### Quick Start: Run Preprocessing
 
-1. Place the raw .gdf files in data/BCICIV_2a/raw/.
-2. (Optional) Adjust parameters in data/BCICIV_2a/config.json.
-   The default settings work for the BCI Competition IV 2a dataset.
-3. Execute:
+1. Place the raw A01T.gdf files in data/BCICIV_2a/raw/.
+2. Execute:
 
 ```bash
+mkdir -p data/BCICIV_2a/raw/
 cp example_config.json data/BCICIV_2a/config.json
 python scripts/run_preprocessing.py
 ```
