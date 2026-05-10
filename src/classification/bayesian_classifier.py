@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.linalg import inv
+from scipy.linalg import pinv
 from sklearn.base import BaseEstimator, ClassifierMixin
 import joblib
 
@@ -35,7 +35,7 @@ class BayesianClassifier(BaseEstimator, ClassifierMixin):
             cov_sum += np.cov(X_c, rowvar=False) * (len(X_c) - 1)
 
         self.shared_cov_ = cov_sum / (len(X) - n_classes)
-        self.inv_cov_ = inv(self.shared_cov_)
+        self.inv_cov_ = pinv(self.shared_cov_) # 取伪逆矩阵，保证协方差矩阵可逆
         return self
 
     def predict(self, X):

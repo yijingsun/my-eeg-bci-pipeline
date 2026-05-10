@@ -22,8 +22,7 @@
   "A01": {
     "T": {
       "filter_ica": [0.5, 40],
-      "ica_exclude_manual": [],
-      "bad_trials_manual": []
+      "ica_exclude_manual": []
     }
   },
   "A04": {

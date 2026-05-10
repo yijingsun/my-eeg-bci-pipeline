@@ -1,6 +1,5 @@
 from .data_loader import BCIDataLoader
 from .preprocessor import EEGPreprocessor
-from .artifact_remover import ArtifactRemover
 from .epoch_processor import EpochProcessor
 from .pre_pipeline import DataPipeline
 

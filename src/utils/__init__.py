@@ -1,2 +1,2 @@
 from .constants import DEFAULT_CHANNEL_RENAMING, DEFAULT_MONTAGE
-from .config_loader import load_session_config
+from .session_config import SessionConfig

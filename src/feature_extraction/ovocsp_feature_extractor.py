@@ -26,24 +26,16 @@ class OVOCspFeatureExtractor:
     
     def __init__(self, 
                  csp_n_components: int = None,                                      # 每个类别对的CSP成分数
-                 csp_reg: str = None,                                               # CSP正则化方法
+                 csp_reg: str = None,                                               # CSP正则化方法(None则默认)
                  log_transform=True,                                                # 是否对CSP特征取log
-                 normalize_features=True,                                           # 是否对CSP特征进行标准化
-                 lda_n_components=None,                                             # LDA降维目标维度(None则跳过LDA)
-                 random_state: int = None                                           # 随机种子
+                 normalize_features: bool = False,                                  # 是否对CSP特征进行标准化
+                 lda_n_components: int = 0                                          # LDA降维目标维度(0则跳过LDA)
                  ):                                                   
         self.csp_n_components = csp_n_components if csp_n_components is not None and csp_n_components > 0 else 4
-        self.csp_reg = csp_reg if csp_reg is not None else 'ledoit_wolf'
+        self.csp_reg = csp_reg
         self.log_transform = log_transform
         self.normalize_features = normalize_features
         self.lda_n_components = lda_n_components
-        self.random_state = random_state if random_state is not None else 37
-        
-        # 训练后会填充的对象
-        self.log_transform = log_transform
-        self.normalize_features = normalize_features
-        self.lda_n_components = lda_n_components
-        self.random_state = random_state
         
         # 训练后会填充的对象
         self.pairwise_csp_models = {}    # {(c1,c2): CSP_model}
@@ -90,7 +82,7 @@ class OVOCspFeatureExtractor:
                 print("✓ 特征标准化完成")
         
         # 2.5 LDA降维 (可选)
-        if self.lda_n_components is not None:
+        if self.lda_n_components > 0:
             feature_matrix = self._apply_lda(feature_matrix, event_labels, verbose)
         
         self.is_fitted = True
@@ -335,7 +327,6 @@ class OVOCspFeatureExtractor:
                 'log_transform': self.log_transform,
                 'normalize_features': self.normalize_features,
                 'lda_n_components': self.lda_n_components,
-                'random_state': self.random_state,
             },
             'models': {
                 'pairwise_csp': self.pairwise_csp_models,
@@ -348,7 +339,6 @@ class OVOCspFeatureExtractor:
             }
         }
         joblib.dump(state, filepath)
-        # print(f"模型已保存: {filepath}")
     
     @staticmethod
     def load(filepath):

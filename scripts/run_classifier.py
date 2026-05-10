@@ -14,7 +14,9 @@ from src.classification.classify_pipline import ClassifyPipeline
 if __name__ == '__main__':
 
     DATASET = 'BCICIV_2a'
-    pipeline = ClassifyPipeline(dataset_name=DATASET)
+    SUBJECT_ID = 'A01'
+    SESSION = 'T'
+    pipeline = ClassifyPipeline(dataset_name=DATASET, subject_id=SUBJECT_ID, session=SESSION)
 
     # 单个被试
-    pipeline.run('A01', 'T', verbose=True)
+    pipeline.run(verbose=True)

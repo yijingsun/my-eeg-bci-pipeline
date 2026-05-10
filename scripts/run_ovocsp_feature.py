@@ -7,5 +7,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.feature_extraction.feature_pipeline import FeatureExtractionPipeline
 
 if __name__ == '__main__':
-    pipeline = FeatureExtractionPipeline('BCICIV_2a')
-    features, extractor = pipeline.run(subject_id='A01', session='T')
+    DATASET = 'BCICIV_2a'
+    SUBJECT_ID = 'A01'
+    SESSION = 'T'
+    pipeline = FeatureExtractionPipeline(dataset_name=DATASET, subject_id=SUBJECT_ID, session=SESSION)
+    
+    # 单个被试
+    features, extractor = pipeline.run()
