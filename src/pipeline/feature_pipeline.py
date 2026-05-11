@@ -9,8 +9,8 @@ from src.utils.session_config import SessionConfig
 from src.feature_extraction.ovocsp_feature_extractor import OVOCspFeatureExtractor
 
 
-class FeatureExtractionPipeline:
-    """OVO-CSP 特征提取流水线"""
+class TrainOVOCspFeaturePipeline:
+    """OVO-CSP 特征提取器训练流水线"""
 
     def __init__(self, dataset_name: str, subject_id: str, session: str):
         if dataset_name is None or subject_id is None or session is None:
@@ -28,6 +28,7 @@ class FeatureExtractionPipeline:
         # 1. 读取预处理好的 epochs 和 labels
         epoch_path = get_epoch_path(self.dataset_name, self.subject_id, self.session)
         if verbose:
+            print('=' * 60)
             print(f"加载 epochs: {epoch_path}")
         epochs = mne.read_epochs(epoch_path, preload=True, verbose=False)
         X = epochs.get_data()
@@ -48,11 +49,13 @@ class FeatureExtractionPipeline:
 
         # 4. 训练并提取特征
         if verbose:
-            print("训练 CSP 提取器并提取特征...")
-        features = extractor.fit_transform(X, y, verbose=False)
+            print('=' * 60)
+            print("开始训练 CSP 提取器并提取特征...")
+        features = extractor.fit_transform(X, y, verbose=True)
 
         if verbose:
-            print(f"✓ 特征提取完成，形状: {features.shape}")
+            print(f"✓ OVO-CSP训练完成, 模型参数: {extractor.get_Params()}")
+            print(f"✓ 特征提取完成, 形状: {features.shape}")
 
         # 5. 保存特征矩阵
         if save_features:

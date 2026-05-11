@@ -14,7 +14,7 @@ class BCIDataLoader:
         self.montage_name = montage_name if montage_name is not None else DEFAULT_MONTAGE
         self._raw = None
 
-    def load(self, filepath: str) -> mne.io.Raw:
+    def load(self, filepath: str, verbose: bool = False) -> mne.io.Raw:
         raw = mne.io.read_raw_gdf(filepath, eog=self.eog_channels, preload=True, verbose=False)
         for ch in self.eog_channels:
             if ch in raw.ch_names:
@@ -23,6 +23,8 @@ class BCIDataLoader:
             raw.rename_channels(self.channel_renaming, verbose=False)
             montage = mne.channels.make_standard_montage(self.montage_name)
             raw.set_montage(montage, on_missing='warn', verbose=False)
+            if verbose:
+                print(f"已设置 {self.montage_name} montage, 通道名称为: {raw.ch_names}")
         self._raw = raw
         return raw
 

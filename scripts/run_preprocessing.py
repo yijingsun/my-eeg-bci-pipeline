@@ -12,7 +12,7 @@ import os
 # 将项目根目录加入 Python 路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.data_preparation.pre_pipeline import DataPipeline
+from src.pipeline.preprocess_pipeline import DataPipeline
 
 
 if __name__ == '__main__':

@@ -1,35 +1,46 @@
 {
   "default": {
-    "resample_freq": 128,
-    "filter_ica": [0.5, 40],
-    "filter_mi": [8, 30],
+
+    "eog_channels": ["EOG-left", "EOG-central", "EOG-right"],
+    "set_montage": true,
+    "montage_name": "standard_1020",
+
+
+    "resample_freq": null,
+    "ref_type": "average",
+    "bad_channels_manual": [],
+
+    "filter_ica": [8, 30],
+    "ica_method": null,
     "ica_n_components": 20,
     "ica_random_state": 71,
-    "ica_method": "fastica",
-    "ref_type": "average",
+    "ica_exclude_manual": [],
+
+    "filter_mi": null,
+
+
     "tmin": 1.0,
     "tmax": 4.0,
     "mi_event_mapping": {"769": 7, "770": 8, "771": 9, "772": 10},
-    "eog_channels": ["EOG-left", "EOG-central", "EOG-right"],
+    "expected_trials": 288,
 
-    "csp_n_components": 4,
+    "csp_n_components": 6,
+    "csp_reg": "ledoit_wolf",
+    "log_transform": false,
+    "normalize_features": true,
     "lda_n_components": 3,
 
-    "classify_do_cv": true,
     "classify_cv_folds": 4,
-    "classify_random_state": 17
+    "classify_random_state": 17,
+    "classify_do_cv": true
   },
+
   "A01": {
     "T": {
-      "filter_ica": [0.5, 40],
-      "ica_exclude_manual": []
     }
   },
   "A04": {
     "T": {
-      "mi_event_mapping": {"769": 5, "770": 6, "771": 7, "772": 8}
-    },
-    "E": {
       "mi_event_mapping": {"769": 5, "770": 6, "771": 7, "772": 8}
     }
   }

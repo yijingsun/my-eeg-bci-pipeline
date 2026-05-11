@@ -29,9 +29,9 @@ class OVOCspFeatureExtractor:
                  csp_reg: str = None,                                               # CSP正则化方法(None则默认)
                  log_transform=True,                                                # 是否对CSP特征取log
                  normalize_features: bool = False,                                  # 是否对CSP特征进行标准化
-                 lda_n_components: int = 0                                          # LDA降维目标维度(0则跳过LDA)
+                 lda_n_components: int = None                                       # LDA降维目标维度(None则跳过LDA)
                  ):                                                   
-        self.csp_n_components = csp_n_components if csp_n_components is not None and csp_n_components > 0 else 4
+        self.csp_n_components = csp_n_components if csp_n_components is not None else 4
         self.csp_reg = csp_reg
         self.log_transform = log_transform
         self.normalize_features = normalize_features
@@ -82,12 +82,10 @@ class OVOCspFeatureExtractor:
                 print("✓ 特征标准化完成")
         
         # 2.5 LDA降维 (可选)
-        if self.lda_n_components > 0:
+        if self.lda_n_components is not None:
             feature_matrix = self._apply_lda(feature_matrix, event_labels, verbose)
         
         self.is_fitted = True
-        if verbose:
-            print("=" * 50 + "\n训练完成!\n")
         
         return self
     
@@ -355,16 +353,19 @@ class OVOCspFeatureExtractor:
         extractor.class_labels = meta['class_labels']
         extractor.is_fitted = meta['is_fitted']
         
-        print(f"模型已加载: {filepath}")
+        print(f"OVO-CSP特征提取器已加载: {filepath}")
         return extractor
     
-    def __repr__(self):
-        status = "已训练" if self.is_fitted else "未训练"
-        n_pairs = len(self.pairwise_csp_models)
-        return (f"OVOCspFeatureExtractor({status}, "
-                f"类别对数={n_pairs}, "
-                f"CSP成分={self.csp_n_components}, "
-                f"正则化={self.csp_reg})")
+    def get_Params(self):
+        return {
+            'config': {
+                'csp_n_components': self.csp_n_components,
+                'csp_reg': self.csp_reg,
+                'log_transform': self.log_transform,
+                'normalize_features': self.normalize_features,
+                'lda_n_components': self.lda_n_components,
+                } 
+            }
 
 
 if __name__ == '__main__':

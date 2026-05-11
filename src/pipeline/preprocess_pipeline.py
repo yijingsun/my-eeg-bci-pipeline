@@ -5,11 +5,12 @@
 import os
 import numpy as np
 import mne
+from sympy import true
 from config import get_raw_path, get_epoch_dir, get_label_dir, ensure_dir
 from src.utils.session_config import SessionConfig
-from .data_loader import BCIDataLoader
-from .preprocessor import EEGPreprocessor
-from .epoch_processor import EpochProcessor
+from src.data_preparation.data_loader import BCIDataLoader
+from src.data_preparation.pre_processor import EEGPreprocessor
+from src.data_preparation.epoch_processor import EpochProcessor
 
 
 class DataPipeline:
@@ -24,7 +25,7 @@ class DataPipeline:
         # ---- 加载配置 ----
         self.cfg = SessionConfig.from_dataset(dataset_name, subject_id, session)
 
-    def run(self, save: bool = True, save_label: bool = True, verbose: bool = True) -> mne.Epochs:
+    def run(self, save: bool = True, save_label: bool = False, verbose: bool = True) -> mne.Epochs:
         """执行完整预处理管道"""
         config = self.cfg
 
@@ -38,7 +39,7 @@ class DataPipeline:
             resample_freq=config.get('resample_freq'),
             filter_ica=config.get('filter_ica'),
             filter_mi=config.get('filter_mi'),
-            ref_type=config.get('ref_type'),
+            ref_type=config.get('ref_type', 'average'),
             bad_channels_manual=config.get('bad_channels_manual'),
             ica_n_components=config.get('ica_n_components'),
             ica_random_state=config.get('ica_random_state'),
@@ -62,9 +63,9 @@ class DataPipeline:
 
         # ---- [1] 加载原始数据 ----
         if verbose:
-            print("\n[1/3] 加载原始数据")
-        filepath = get_raw_path(self.dataset_name, self.subject_id, self.session, config.get('file_type'))
-        raw = loader.load(filepath)
+            print("[1/3] 加载原始数据")
+        filepath = get_raw_path(self.dataset_name, self.subject_id, self.session, config.get('file_type', 'gdf'))
+        raw = loader.load(filepath, verbose=verbose)
         if verbose:
             print(f"\n  ✓ 原始数据加载已完成: {filepath}")
             print(f"    通道数: {len(raw.ch_names)}")
@@ -77,8 +78,6 @@ class DataPipeline:
         if verbose:
             print("\n[2/3] 开始预处理")
         raw = preprocessor.process(raw, verbose=verbose)
-        if verbose:
-            print(f"\n✓ 预处理已完成")
 
         # ---- [3] 分段 ----
         if verbose:
@@ -94,7 +93,7 @@ class DataPipeline:
             print(f"\n✓ 事件提取与分段已完成")
             print(f"    试次数: {len(epochs)}")
             print(f"    通道数: {len(epochs.ch_names)}")
-            print(f"    采样点: {epochs.get_data().shape[1]}")
+            print(f"    采样数: {epochs.get_data().shape[2]}")
             print(f"    事件标签: {np.unique(epochs.events[:, 2])}")
             print(f"    事件分布: {np.bincount(epochs.events[:, 2])[1:]}")
 

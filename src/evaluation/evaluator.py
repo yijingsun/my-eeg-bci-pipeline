@@ -1,4 +1,3 @@
-# src/evaluation/evaluator.py
 import numpy as np
 from sklearn.model_selection import cross_val_score, StratifiedKFold
 from sklearn.metrics import cohen_kappa_score, make_scorer

@@ -21,16 +21,16 @@ class EEGPreprocessor:
         ica_exclude_manual: list = None,
     ):
         # 基础参数
-        self.resample_freq = resample_freq if resample_freq is not None else 250
-        self.filter_ica = filter_ica if filter_ica is not None else [0.5, 50]
-        self.filter_mi = filter_mi if filter_mi is not None else [8, 30]
-        self.ref_type = ref_type if ref_type is not None else 'average'
+        self.resample_freq = resample_freq
+        self.filter_ica = filter_ica
+        self.filter_mi = filter_mi
+        self.ref_type = ref_type
         self.bad_channels_manual = bad_channels_manual if bad_channels_manual is not None else []
 
         # ICA 相关
+        self.ica_method = ica_method
         self.ica_n_components = ica_n_components if ica_n_components is not None else 20
         self.ica_random_state = ica_random_state if ica_random_state is not None else 71
-        self.ica_method = ica_method
         self.ica_exclude_manual = ica_exclude_manual if ica_exclude_manual is not None else []
         
         # 运行时填充
@@ -72,7 +72,7 @@ class EEGPreprocessor:
             raw.filter(l_freq=self.filter_ica[0], h_freq=self.filter_ica[1],
                        fir_design='firwin', verbose=False)
             if verbose:
-                print(f'    ✓ 带通滤波, 频段: {self.filter_ica[0]} - {self.filter_ica[1]} Hz')
+                print(f'    ✓ 带通滤波【1】, 频段: {self.filter_ica[0]} - {self.filter_ica[1]} Hz')
         return raw
 
     def apply_mi_filter(self, raw: mne.io.Raw, verbose: bool = False) -> mne.io.Raw:
@@ -82,7 +82,7 @@ class EEGPreprocessor:
             raw.filter(l_freq=self.filter_mi[0], h_freq=self.filter_mi[1],
                        fir_design='firwin', verbose=False)
             if verbose:
-                print(f'    ✓ 带通滤波, 频段: {self.filter_mi[0]} - {self.filter_mi[1]} Hz')
+                print(f'    ✓ 带通滤波【2】, 频段: {self.filter_mi[0]} - {self.filter_mi[1]} Hz')
         return raw
 
     # ===================== ICA 相关方法 =====================

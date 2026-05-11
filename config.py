@@ -39,8 +39,8 @@ def get_classifier_dir(dataset_name: str) -> str:
     """分类器目录"""
     return os.path.join(get_dataset_dir(dataset_name), 'classifier')
 
-def get_cv_result_dir(dataset_name: str) -> str:
-    """交叉验证结果目录"""
+def get_result_dir(dataset_name: str) -> str:
+    """模型元数据 + 交叉验证结果 文件目录"""
     return os.path.join(get_dataset_dir(dataset_name), 'result')
 
 def get_label_dir(dataset_name: str) -> str:
@@ -68,11 +68,6 @@ def get_extractor_path(dataset_name: str, subject_id: str, session: str, extract
 def get_classifier_path(dataset_name: str, subject_id: str, session: str, classifier_name: str = 'bayesian') -> str:
     """分类器文件完整路径"""
     return os.path.join(get_classifier_dir(dataset_name), f"{subject_id}{session}_{classifier_name}_clf.joblib")
-
-def get_cv_result_path(dataset_name: str, subject_id: str, session: str, classifier_name: str = 'bayesian') -> str:
-    """交叉验证结果文件完整路径"""
-    return os.path.join(get_cv_result_dir(dataset_name), f"{subject_id}{session}_{classifier_name}_cv_results.json")
-    
 
 def get_label_path(dataset_name: str, subject_id: str, session: str) -> str:
     """标签文件完整路径"""
