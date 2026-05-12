@@ -16,7 +16,6 @@ from sklearn.metrics import cohen_kappa_score, accuracy_score
 from config import (
     get_classifier_path, get_epoch_path, get_extractor_path, get_label_path
 )
-from src.utils.session_config import SessionConfig
 from src.pipeline.preprocess_pipeline import DataPipeline
 from src.feature_extraction.ovocsp_feature_extractor import OVOCspFeatureExtractor
 from src.classification.bayesian_classifier import BayesianClassifier
@@ -44,8 +43,8 @@ for subject in SUBJECT_IDS:
             print("  运行预处理管道...")
             pipeline = DataPipeline(dataset_name=DATASET, subject_id=subject, session=SESSION)
             pipeline.cfg['mi_event_mapping'] = {"768": 6}
-            pipeline.cfg['tmin'] = 3.0
-            pipeline.cfg['tmax'] = 6.0
+            # pipeline.cfg['tmin'] = 3.0 # 768事件比cue事件早2s
+            # pipeline.cfg['tmax'] = 6.0
             pipeline.run(verbose=True, save_label=False)
         else:
             print("  复用已存在的 epochs 文件")
@@ -128,3 +127,23 @@ print("\n评估完成。")
 # 评估完成。
 
 # 0.52    0.69 	0.34 	0.71 	0.44 	0.16 	0.21 	0.66 	0.73 	0.69
+
+# ============================================================
+# 测试集评估汇总
+# ============================================================
+# 成功被试数: 9
+# 平均 Kappa  : 0.4583 ± 0.1884
+# 平均 Accuracy: 0.5938 ± 0.1413
+
+# 各被试详情:
+#   A01: Kappa=0.6574, Acc=0.7431
+#   A02: Kappa=0.4954, Acc=0.6215
+#   A03: Kappa=0.6343, Acc=0.7257
+#   A04: Kappa=0.3287, Acc=0.4965
+#   A05: Kappa=0.1528, Acc=0.3646 < 0.25
+#   A06: Kappa=0.1620, Acc=0.3715 < 0.25
+#   A07: Kappa=0.6389, Acc=0.7292
+#   A08: Kappa=0.4676, Acc=0.6007
+#   A09: Kappa=0.5880, Acc=0.6910
+
+# 评估完成。

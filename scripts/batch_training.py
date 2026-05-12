@@ -19,8 +19,8 @@ from src.pipeline.classify_pipeline import TrainClassifierPipeline
 DATASET = 'BCICIV_2a'
 SUBJECT_IDS = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09']
 SESSION = 'T'          # 训练集
-DO_PREPROCESS = True   # 如果已经生成过 epochs，可设为 False 跳过预处理
-DO_FEATURE = True      # 如果已经生成过特征，可设为 False 跳过特征提取
+DO_PREPROCESS = False   # 如果已经生成过 epochs，可设为 False 跳过预处理
+DO_FEATURE = False      # 如果已经生成过特征，可设为 False 跳过特征提取
 
 # 存储每个被试的指标
 all_kappas = []
@@ -118,17 +118,17 @@ print("\n批量训练与评估结束。")
 # 整体评估（所有被试训练集交叉验证结果）
 # ============================================================
 # 成功处理被试数: 9
-# 平均 Kappa  : 0.7202 ± 0.1199
-# 平均 Accuracy: 0.7901 ± 0.0899
+# 平均 Kappa  : 0.7387 ± 0.1120
+# 平均 Accuracy: 0.8040 ± 0.0840
 
 # 各被试详情:
 #   A01: Kappa=0.7870, Acc=0.8403
-#   A02: Kappa=0.7315, Acc=0.7986
-#   A03: Kappa=0.8426, Acc=0.8819
-#   A04: Kappa=0.6019, Acc=0.7014
-#   A05: Kappa=0.4907, Acc=0.6181
+#   A02: Kappa=0.7546, Acc=0.8160
+#   A03: Kappa=0.8611, Acc=0.8958
+#   A04: Kappa=0.6343, Acc=0.7257
+#   A05: Kappa=0.5463, Acc=0.6597
 #   A06: Kappa=0.6389, Acc=0.7292
-#   A07: Kappa=0.8333, Acc=0.8750
+#   A07: Kappa=0.8704, Acc=0.9028
 #   A08: Kappa=0.8704, Acc=0.9028
 #   A09: Kappa=0.6852, Acc=0.7639
 
