@@ -1,9 +1,3 @@
-import sys
-import os
-
-# 将项目根目录加入 Python 路径
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from src.pipeline import feature_pipeline
 from src.pipeline.preprocess_pipeline import DataPipeline
 from src.pipeline.feature_pipeline import TrainOVOCspFeaturePipeline

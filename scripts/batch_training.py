@@ -4,14 +4,8 @@
 遍历 A01~A09 训练集，执行预处理、特征提取和分类器训练，
 从管道返回结果中提取 CV Kappa / Accuracy，并进行整体评估。
 """
-import sys
-import os
 import numpy as np
 
-# 将项目根目录加入 Python 路径，确保能导入 src 包
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-# 根据你的实际导入路径调整（如果管道类在别处，请修改）
 from src.pipeline.preprocess_pipeline import DataPipeline
 from src.pipeline.feature_pipeline import TrainOVOCspFeaturePipeline
 from src.pipeline.classify_pipeline import TrainClassifierPipeline

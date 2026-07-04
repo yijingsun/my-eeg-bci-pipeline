@@ -5,9 +5,6 @@
 - 每次改变 tmin/tmax 都重新分段
 - 自动将最佳参数保存到 config.json 中对应被试的 session T
 """
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import itertools
 import numpy as np
 from config import get_raw_path, get_dataset_dir, ensure_dir

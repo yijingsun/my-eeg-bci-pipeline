@@ -3,9 +3,6 @@
 特征提取 + 分类器参数搜索脚本（固定预处理）
 遍历 CSP 成分数、正则化、标准化、降维、分类器类型等，找出最高 Kappa 组合。
 """
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import itertools
 import numpy as np
 import mne

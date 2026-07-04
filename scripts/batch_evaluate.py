@@ -6,9 +6,7 @@
 - 预测并计算与官方真实标签的 Kappa 和 Accuracy
 - 汇总所有被试的结果
 """
-import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 import mne

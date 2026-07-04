@@ -3,9 +3,7 @@
 将官方 .mat 格式的真实标签转换为 .npy 格式，方便后续快速加载。
 处理训练集（T）和测试集（E）的标签。
 """
-import sys
 import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
 from scipy.io import loadmat

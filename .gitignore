@@ -2,6 +2,7 @@
 .myvenv/
 __pycache__/
 *.py[cod]
+*.egg-info/
 
 # OS
 .DS_Store

@@ -5,10 +5,6 @@
     cd /path/to/my-eeg-bci-pipeline
     python scripts/run_classifier.py
 """
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from src.pipeline.classify_pipeline import TrainClassifierPipeline
 
 if __name__ == '__main__':
