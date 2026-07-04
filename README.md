@@ -2,7 +2,9 @@
 
 模块化的 EEG-BCI 分类流水线，支持预处理、特征提取、分类训练与评估的完整流程。
 
-> BCI 领域知识笔记见 [bci-notes.md](./bci-notes.md)
+> BCI 领域知识笔记见 [docs/bci-domain-notes.md](./docs/bci-domain-notes.md)
+>
+> 架构概览见 [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 扩展开发指南见 [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md)
 
 ---
 
@@ -74,7 +76,11 @@ my-eeg-bci-pipeline/
 │       └── result/                    # 交叉验证结果 .json
 │
 ├── notebook/                          # Jupyter 分析笔记
-└── draft/                             # 草稿代码
+├── draft/                             # 草稿代码
+└── docs/                              # 项目文档
+    ├── ARCHITECTURE.md                # 架构概览与数据流
+    ├── DEVELOPMENT.md                 # 扩展开发指南
+    └── bci-domain-notes.md            # BCI 领域知识笔记
 ```
 
 ---
