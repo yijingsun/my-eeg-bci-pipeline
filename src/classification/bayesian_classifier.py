@@ -3,13 +3,13 @@ from scipy.linalg import pinv
 from sklearn.base import BaseEstimator, ClassifierMixin
 import joblib
 
-"""
-继承BaseEstimator和ClassifierMixin类, 获得标准接口fit, predict, predict_proba, 方便使用scikit-learn的交叉验证工具cross_val_score
-"""
 class BayesianClassifier(BaseEstimator, ClassifierMixin):
     """
     贝叶斯分类器（共享协方差矩阵，与LDA分类器等价）
     假设 P(x|y) ~ N(mu_y, Sigma)
+
+    继承BaseEstimator和ClassifierMixin类, 获得标准接口fit, predict, predict_proba,
+    方便使用scikit-learn的交叉验证工具cross_val_score
     """
     def __init__(self):
         self.classes_ = None

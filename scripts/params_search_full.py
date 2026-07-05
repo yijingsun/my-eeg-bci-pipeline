@@ -7,7 +7,7 @@
 """
 import itertools
 import numpy as np
-from config import get_raw_path, get_dataset_dir, ensure_dir
+from config import get_raw_path
 from src.utils.session_config import SessionConfig
 from src.data_preparation.data_loader import BCIDataLoader
 from src.data_preparation.pre_processor import EEGPreprocessor

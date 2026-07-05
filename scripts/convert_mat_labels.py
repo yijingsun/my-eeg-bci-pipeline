@@ -7,7 +7,7 @@ import os
 
 import numpy as np
 from scipy.io import loadmat
-from config import get_label_dir, ensure_dir
+from config import get_label_dir
 
 DATASET = 'BCICIV_2a'
 SUBJECT_IDS = ['A01', 'A02', 'A03', 'A04', 'A05', 'A06', 'A07', 'A08', 'A09']

@@ -3,7 +3,6 @@ import mne
 import joblib
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_val_score, StratifiedKFold
 import warnings
 
 
@@ -356,7 +355,7 @@ class OVOCspFeatureExtractor:
         print(f"OVO-CSP特征提取器已加载: {filepath}")
         return extractor
     
-    def get_Params(self):
+    def get_params(self):
         return {
             'config': {
                 'csp_n_components': self.csp_n_components,

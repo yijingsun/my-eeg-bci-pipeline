@@ -1,5 +1,4 @@
 import mne
-from config import get_raw_path
 from src.utils.constants import DEFAULT_CHANNEL_RENAMING, DEFAULT_MONTAGE
 
 class BCIDataLoader:

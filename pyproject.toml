@@ -1,11 +1,12 @@
 [build-system]
-requires = ["setuptools>=68.0"]
+requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "my-eeg-bci-pipeline"
 version = "0.1.0"
 description = "模块化的 EEG-BCI 分类流水线"
+readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 dependencies = [
     "mne>=1.12.0",
@@ -23,14 +24,22 @@ dependencies = [
     "tqdm>=4.65.0",
     "joblib>=1.3.0",
     "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
     "notebook",
     "ipykernel",
     "ipython",
     "nbformat",
+    "build",
+    "twine",
 ]
 
-[tool.setuptools]
-packages = ["src"]
+[tool.setuptools.packages.find]
+include = ["src*", "config*"]
 
-[tool.setuptools.package-dir]
-"" = "."
+[tool.pytest.ini_options]
+markers = [
+    "slow: 慢速集成测试（需要真实数据），运行时用 -m 'not slow' 跳过",
+]
