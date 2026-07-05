@@ -114,26 +114,21 @@ class NewFeatureExtractor:
         ...
 ```
 
-### 2.2 创建对应的 Pipeline
+### 2.2 集成到训练脚本
 
-参考 `src/pipeline/feature_pipeline.py`，新建 `TrainNewFeaturePipeline` 类：
+在 `scripts/train.py` 的 `run_feature_extraction()` 函数中替换 extractor 实例化逻辑：
 
 ```python
-class TrainNewFeaturePipeline:
-    def __init__(self, dataset_name: str, subject_id: str, session: str):
-        ...
-
-    def run(self, save_features=True, save_extractor=True, verbose=True):
-        # 1. 加载 epochs
-        # 2. 实例化 NewFeatureExtractor
-        # 3. fit_transform
-        # 4. 保存特征和提取器
-        ...
+# scripts/train.py
+def run_feature_extraction(epoch_path, label_path, feature_dir, cfg, ...):
+    extractor = NewFeatureExtractor(...)  # 替换 OVOCspFeatureExtractor
+    features = extractor.fit_transform(X, y, verbose=verbose)
+    ...
 ```
 
 ### 2.3 更新评估脚本
 
-在 `batch_evaluate.py` 中添加对新特征提取器的加载和调用逻辑。
+在 `scripts/evaluate.py` 中添加对新特征提取器的加载和调用逻辑。
 
 ---
 
@@ -201,14 +196,12 @@ def load(filepath: str):
     return clf
 ```
 
-### 3.4 集成到 Pipeline
+### 3.4 集成到训练脚本
 
-在 `TrainClassifierPipeline` 中替换 `classifier_class`：
+调用 `run_classification()` 时传入新分类器：
 
 ```python
-pipeline = TrainClassifierPipeline(dataset_name, subject_id, session)
-pipeline.classifier_class = NewClassifier
-pipeline.run()
+run_classification(..., classifier_class=NewClassifier)
 ```
 
 ---
@@ -219,3 +212,40 @@ pipeline.run()
 - **Docstring**：采用 Google 或 NumPy 风格，包含 Args、Returns、Raises
 - **命名**：变量和函数用 `snake_case`，类用 `PascalCase`
 - **日志**：当前使用 `print()`，未来计划迁移到 `logging` 模块
+
+---
+
+## 5. 单元测试
+
+### 5.1 目录结构
+
+```
+tests/
+├── conftest.py                    # 共享夹具（真实/模拟 config.json）
+├── utils/
+│   ├── test_session_config.py     # SessionConfig 测试
+│   └── test_constants.py          # 常量测试
+├── data_preparation/              # BCIDataLoader / EEGPreprocessor / EpochProcessor
+├── feature_extraction/            # OVOCspFeatureExtractor
+├── classification/                # BayesianClassifier
+├── evaluation/                    # BCIEvaluator
+├── pipeline/                      # 端到端组装测试（@pytest.mark.slow）
+└── scripts/                       # 脚本聚合逻辑 + 搜索集成测试
+```
+
+测试文件与 `src/` 一一对应。新增 `src/utils/xxx.py` 时，应同步添加 `tests/utils/test_xxx.py`。
+
+### 5.2 运行
+
+```bash
+pip install pytest
+python -m pytest tests/ -v
+```
+
+### 5.3 编写规范
+
+- 使用 `pytest` 框架
+- 测试类按功能分组（`TestFromJsonFile`、`TestSave` 等）
+- 通过 `tests/conftest.py` 中的 fixture 获取真实/模拟 config.json 路径
+- save() 测试必须使用 `temp_config_path` fixture，避免污染真实文件
+- 关键覆盖项：默认配置加载、被试覆盖合并、属性/字典访问、错误路径、diff 保存逻辑

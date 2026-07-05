@@ -46,24 +46,29 @@ my-eeg-bci-pipeline/
 │   │   └── bayesian_classifier.py     # 贝叶斯分类器（兼容 sklearn 接口）
 │   ├── evaluation/
 │   │   └── evaluator.py               # K-Fold 交叉验证评估器
-│   ├── pipeline/
-│   │   ├── preprocess_pipeline.py     # 预处理管道（加载→预处理→分段→保存）
-│   │   ├── feature_pipeline.py        # 特征提取管道（加载epochs→CSP→保存）
-│   │   └── classify_pipeline.py       # 分类管道（加载特征→训练→CV→保存）
 │   └── utils/
 │       ├── constants.py               # 通道映射等常量
 │       └── session_config.py          # 被试级配置管理（config.json 读写）
 │
 ├── scripts/                           # 运行入口脚本
-│   ├── run_preprocessing.py           # 单被试预处理
-│   ├── run_ovocsp_feature.py          # 单被试特征提取
-│   ├── run_classifier.py              # 单被试分类训练
-│   ├── training.py                    # 单被试全流程（预处理+特征+分类）
-│   ├── batch_training.py              # 批量训练（A01~A09）
-│   ├── batch_evaluate.py              # 批量测试集评估
+│   ├── train.py                       # 训练（单被试 + --batch 批量）
+│   ├── evaluate.py                    # 测试集评估（单被试 + --batch 批量）
 │   ├── convert_mat_labels.py          # .mat 标签转 .npy
 │   ├── search_best_params.py          # 特征+分类器参数网格搜索
-│   └── params_search_full.py          # 含分段窗口的全参数搜索
+│   ├── params_search_full.py          # 含分段窗口的全参数搜索
+│   └── build_package.py               # 打包构建
+│
+├── tests/                             # 单元测试（与 src/ 一一对应）
+│   ├── conftest.py                    # 共享夹具
+│   ├── utils/
+│   │   ├── test_session_config.py     # SessionConfig 测试
+│   │   └── test_constants.py          # 常量测试
+│   ├── data_preparation/              # BCIDataLoader / EEGPreprocessor / EpochProcessor
+│   ├── feature_extraction/            # OVOCspFeatureExtractor
+│   ├── classification/                # BayesianClassifier
+│   ├── evaluation/                    # BCIEvaluator
+│   ├── pipeline/                      # 端到端组装测试（@pytest.mark.slow）
+│   └── scripts/                       # 脚本聚合逻辑 + 搜索集成测试
 │
 ├── data/                              # 数据目录
 │   └── BCICIV_2a/
@@ -95,57 +100,28 @@ my-eeg-bci-pipeline/
 cp example_config.json data/BCICIV_2a/config.json
 ```
 
-### 2. 预处理
+### 2. 训练
 
 ```bash
-python scripts/run_preprocessing.py
+# 单被试全流程（默认 A01，训练集 T）
+python scripts/train.py
+
+# 指定被试
+python scripts/train.py --subject A03
+
+# 仅运行特征提取
+python scripts/train.py --step feature
+
+# 批量模式（A01 / A02 / A03 ...）
+python scripts/train.py --batch
 ```
 
-输出：`data/BCICIV_2a/epochs/A01T_epo.fif`
-
-可在脚本中修改 `SUBJECT_ID` 和 `SESSION` 处理其他被试，或取消注释循环批量处理。
-
-### 3. 特征提取
+### 3. 测试集评估
 
 ```bash
-python scripts/run_ovocsp_feature.py
-```
-
-输出：
-- `data/BCICIV_2a/feature/A01T_ovocsp_features.npy`
-- `data/BCICIV_2a/feature/A01T_ovocsp_extractor.joblib`
-
-### 4. 分类训练
-
-```bash
-python scripts/run_classifier.py
-```
-
-输出：
-- `data/BCICIV_2a/classifier/A01T_bayesian_clf.joblib`
-- `data/BCICIV_2a/result/A01T_bayesian_train_results_*.json`
-
-### 5. 单被试全流程（2-4 合并）
-
-```bash
-python scripts/training.py
-```
-
-### 6. 批量训练（A01~A09）
-
-```bash
-python scripts/batch_training.py
-```
-
-可通过顶部的 `DO_PREPROCESS` / `DO_FEATURE` 开关跳过已完成的步骤。
-
-### 7. 测试集评估
-
-```bash
-python scripts/batch_evaluate.py
-```
-
-加载 T 集训练好的特征提取器和分类器，对 E 集进行预测，计算 Kappa 和 Accuracy。
+python scripts/evaluate.py              # 单被试 A01
+python scripts/evaluate.py --subject A03
+python scripts/evaluate.py --batch     # 批量评估
 
 ---
 
@@ -189,3 +165,27 @@ python scripts/params_search_full.py
 ```
 
 搜索完成后可将最优参数写回 `config.json` 对应被试条目。
+
+---
+
+## 测试
+
+```bash
+# 安装测试依赖
+pip install pytest
+
+# 运行全部测试
+python -m pytest tests/ -v
+
+# 运行特定模块
+python -m pytest tests/utils/test_session_config.py -v
+```
+
+测试文件与 `src/` 一一对应，覆盖：
+- `SessionConfig`：config.json 加载、默认值合并、被试覆盖、属性/字典访问、save() diff
+- `BayesianClassifier`：fit/predict/predict_proba、sklearn 兼容、持久化
+- `OVOCspFeatureExtractor`：fit/transform/fit_transform、LDA、持久化
+- `BCIEvaluator`：交叉验证评估
+- `BCIDataLoader` / `EEGPreprocessor` / `EpochProcessor`：各预处理步骤
+- Pipeline 组装逻辑（slow）：端到端预处理→特征→分类
+- Scripts 聚合逻辑：批量汇总统计、argparse 解析
